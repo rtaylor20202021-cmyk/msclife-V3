@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Musician Manager V3</title>
+    <title>Musician Manager V3 (Save Enabled)</title>
     <style>
         :root {
             --bg: #0f0f0f;
@@ -11,6 +11,7 @@
             --accent: #00ff88;
             --text: #ffffff;
             --secondary: #a0a0a0;
+            --danger: #ff4444;
         }
 
         body {
@@ -58,7 +59,7 @@
 
         .controls {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 10px;
             max-width: 1200px;
             margin: 0 auto;
@@ -83,10 +84,39 @@
             transform: translateY(-2px);
         }
 
+        button.reset {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        button.reset:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <div id="status">
+    <div id="status"></div>
+
+    <pre id="output"><b>V3 Engine Online...</b></pre>
+
+    <div class="controls-wrapper">
+        <div class="controls">
+            <button onclick="createSong()">Write Song</button>
+            <button onclick="practice()">Practice ($20)</button>
+            <button onclick="perform()">Play Gig</button>
+            <button onclick="showSongs()">Discography</button>
+            <button onclick="releaseSong()">Release Single</button>
+            <button onclick="makeAlbum()">Record Album</button>
+            <button onclick="startTour()">Tour Mode</button>
+            <button class="reset" onclick="resetGame()">Reset Save</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
