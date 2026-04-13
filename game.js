@@ -10,9 +10,38 @@ const platforms = {
 
 const out = document.getElementById('output');
 
-/**
- * Fame Level Thresholds - Version 3
- */
+// --- SAVE SYSTEM ---
+
+function saveGame() {
+  const gameState = { fame, money, skill, songs, albums };
+  localStorage.setItem('musicianManagerSave', JSON.stringify(gameState));
+}
+
+function loadGame() {
+  const savedData = localStorage.getItem('musicianManagerSave');
+  if (savedData) {
+    const data = JSON.parse(savedData);
+    fame = data.fame;
+    money = data.money;
+    skill = data.skill;
+    songs = data.songs;
+    albums = data.albums;
+    print("<b>Game Loaded.</b> Welcome back to the studio.");
+  } else {
+    print("<b>New Career Started.</b> Good luck out there.");
+  }
+  updateStatus();
+}
+
+function resetGame() {
+  if (confirm("Are you sure? You will lose all your fame and music!")) {
+    localStorage.removeItem('musicianManagerSave');
+    location.reload();
+  }
+}
+
+// --- CORE LOGIC ---
+
 function getFameLevel() {
   if (fame >= 100000) return "👑 Global Legend";
   if (fame >= 50000)  return "🌟 Superstar";
@@ -40,6 +69,7 @@ function updateStatus() {
       <span>ALBUMS: ${albums.length}</span>
     `;
   }
+  saveGame(); // Auto-save on every stat update
 }
 
 function collectRoyalties() {
@@ -52,7 +82,7 @@ function collectRoyalties() {
   });
   if (totalEarnings > 0) {
     money += totalEarnings;
-    print(`<span style="color: #ffd600;">Passive Income: $${totalEarnings} collected from streams.</span>`);
+    print(`<span style="color: #ffd600;">Passive Income: $${totalEarnings} collected.</span>`);
   }
 }
 
@@ -109,7 +139,7 @@ function releaseSong() {
   let unreleased = songs.filter(s => !s.released);
   if (unreleased.length === 0) { print("No unreleased songs available."); return; }
   showSongs();
-  let idx = parseInt(prompt("Enter song number to release globally:")) - 1;
+  let idx = parseInt(prompt("Enter song number to release:")) - 1;
   if (isNaN(idx) || idx < 0 || idx >= songs.length || songs[idx].released) {
     print("Selection error.");
     return;
@@ -122,13 +152,13 @@ function releaseSong() {
   }
   fame += tf; money += tm;
   target.released = true;
-  print(`<b>RELEASED:</b> '${target.name}' is now on all platforms! +${tf} Fame, +$${tm} Upfront.`);
+  print(`<b>RELEASED:</b> '${target.name}'! +${tf} Fame, +$${tm} Upfront.`);
   updateStatus();
 }
 
 function makeAlbum() {
   let available = songs.filter(s => !s.released);
-  if (available.length < 3) { print("Error: You need 3+ unreleased songs."); return; }
+  if (available.length < 3) { print("Error: 3+ unreleased songs required."); return; }
   let albumName = prompt("Album Title:");
   if (!albumName) return;
   let selected = [];
@@ -157,10 +187,10 @@ function makeAlbum() {
 }
 
 function startTour() {
-  if (songs.length < 3) { print("You need at least 3 songs to build a setlist."); return; }
+  if (songs.length < 3) { print("Need 3+ songs to tour."); return; }
   let type = prompt("Select Tour:\n1: Regional\n2: National\n3: Continental\n4: Global");
   let i = parseInt(type) - 1;
-  if (type == 4 && albums.length < 1) { print("Global tours require at least 1 album."); return; }
+  if (type == 4 && albums.length < 1) { print("Global tours require an album."); return; }
   let names = ["Regional", "National", "Continental", "Global"];
   if (!names[i]) return;
   let shows = [6, 10, 15, 20][i];
@@ -176,4 +206,5 @@ function startTour() {
   updateStatus();
 }
 
-updateStatus();
+// Initial Load
+loadGame();
